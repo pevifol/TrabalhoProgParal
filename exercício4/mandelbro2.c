@@ -20,7 +20,7 @@ void main(int argc, char *argv[])
        /* Mandlebrot variables */
         int i, j, k,rank,numprocs,l;
         Compl	z, c;
-        float	lengthsq, temp;
+        float	lengthsq, temp,t1,t0;
         float* ponto;
         float** pontos;
         MPI_Init(&argc, &argv);
