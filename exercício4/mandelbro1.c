@@ -1,14 +1,10 @@
 /* Sequential Mandlebrot program */
 
-
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xos.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
-
+#include <mpi.h>
 
 #define		X_RESN	1280       /* x resolution */
 #define		Y_RESN	900       /* y resolution */
@@ -19,49 +15,16 @@ typedef struct complextype
 	} Compl;
 
 
-void main ()
+void main (int argc, char *argv[])
 {
-	Window		win;                            /* initialization for a window */
-	unsigned
-	int             width, height,                  /* window size */
-                        x, y,                           /* window position */
-                        border_width,                   /*border width in pixels */
-                        display_width, display_height,  /* size of screen */
-                        screen;                         /* which screen */
-
-	char            *window_name = "Mandelbrot Set", *display_name = NULL;
-	GC              gc;
-	unsigned
-	long		valuemask = 0;
-	XGCValues	values;
-	Display		*display;
-	XSizeHints	size_hints;
-	Pixmap		bitmap;
-	XPoint		points[800];
-	FILE		*fp, *fopen ();
-	char		str[100];
-	
-	XSetWindowAttributes attr[1];
 
        /* Mandlebrot variables */
         int i, j, k;
         Compl	z, c;
         float	lengthsq, temp;
-       
-	/* connect to Xserver */
-
-	if (  (display = XOpenDisplay (display_name)) == NULL ) {
-	   fprintf (stderr, "drawon: cannot connect to X server %s\n",
-				XDisplayName (display_name) );
-	exit (-1);
-	}
-	
-	/* get screen size */
-
-	screen = DefaultScreen (display);
-	display_width = DisplayWidth (display, screen);
-	display_height = DisplayHeight (display, screen);
-
+        MPI_Init(&argc, &argv);
+        MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+        MPI_Comm_size (MPI_COMM_WORLD, &numprocs);  
 	/* set window size */
 
 	width = X_RESN;
@@ -71,50 +34,15 @@ void main ()
 
 	x = 0;
 	y = 0;
-
-        /* create opaque window */
-
-	border_width = 4;
-	win = XCreateSimpleWindow (display, RootWindow (display, screen),
-				x, y, width, height, border_width, 
-				BlackPixel (display, screen), WhitePixel (display, screen));
-
-	size_hints.flags = USPosition|USSize;
-	size_hints.x = x;
-	size_hints.y = y;
-	size_hints.width = width;
-	size_hints.height = height;
-	size_hints.min_width = 300;
-	size_hints.min_height = 300;
 	
-	XSetNormalHints (display, win, &size_hints);
-	XStoreName(display, win, window_name);
-
-        /* create graphics context */
-
-	gc = XCreateGC (display, win, valuemask, &values);
-
-	XSetBackground (display, gc, WhitePixel (display, screen));
-	XSetForeground (display, gc, DefaultColormap (display, screen));
-	XSetLineAttributes (display, gc, 1, LineSolid, CapRound, JoinRound);
-
-	attr[0].backing_store = Always;
-	attr[0].backing_planes = 1;
-	attr[0].backing_pixel = DefaultColormap(display, screen);
-
-	XChangeWindowAttributes(display, win, CWBackingStore | CWBackingPlanes | CWBackingPixel, attr);
-
-	XMapWindow (display, win);
-	XSync(display, 0);
-      	 
         /* Calculate and draw points */
-
+        t0 = MPI_Wtime()
         for(i=0; i < X_RESN; i++) 
         for(j=0; j < Y_RESN; j++) {
 
           z.real = z.imag = 0.0;
           c.real = ((float) j - 800.0)/450.0;               /* scale factors for 800 x 800 window */
-	      c.imag = ((float) i - 375.0)/450.0;
+	  c.imag = ((float) i - 375.0)/450.0;
           k = 0;
 
           do  {                                             /* iterate for pixel color */
@@ -127,13 +55,12 @@ void main ()
 
           } while (lengthsq < 4.5 && k < 10000);
 
-        if (k == 10000) XDrawPoint (display, win, gc, j, i);
-
+        if (k == 10000);
         }
-	 
-	XFlush (display);
-	sleep (75);
-
+        t1 = MPI_Wtime();
+	if (rank == 0) {
+	printf("Tempo da rodada: %f",t1-t0);
+	}
 	/* Program Finished */
 
 }
