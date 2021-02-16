@@ -1,9 +1,5 @@
 /* Sequential Mandlebrot program */
 
-
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xos.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -59,9 +55,6 @@ void main(int argc, char *argv[])
         ponto[1] = j;
         pontos[l] = ponto;
         l++;
-        }
-        if (k == 10000 && rank == 0) {
-        XDrawPoint (display, win, gc, j, i);
         }
         }
         }
