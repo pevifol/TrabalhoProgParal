@@ -21,7 +21,7 @@ void main (int argc, char *argv[])
        /* Mandlebrot variables */
         int i, j, k;
         Compl	z, c;
-        float	lengthsq, temp;
+        float	lengthsq, temp,t1,t0;
         MPI_Init(&argc, &argv);
         MPI_Comm_rank (MPI_COMM_WORLD, &rank);
         MPI_Comm_size (MPI_COMM_WORLD, &numprocs);  
