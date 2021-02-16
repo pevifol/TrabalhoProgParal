@@ -48,6 +48,7 @@ int main(int argc, char **argv) {
   double *x, *y;
   double mySUMx, mySUMy, mySUMxy, mySUMxx, SUMx, SUMy, SUMxy,
          SUMxx, SUMres, res, slope, y_intercept, y_estimate;
+  double t1,t0;
   int i,j,n,myid,numprocs,naverage,nremain,mypoints,ishift;
   /*int new_sleep (int seconds);*/
   MPI_Status istatus;
@@ -59,7 +60,7 @@ int main(int argc, char **argv) {
   MPI_Init(&argc, &argv);
   MPI_Comm_rank (MPI_COMM_WORLD, &myid);
   MPI_Comm_size (MPI_COMM_WORLD, &numprocs);
-
+  t0 = MPI_Wtime();
   /* ----------------------------------------------------------
    * Step 1: Process 0 reads data and sends the value of n
    * ---------------------------------------------------------- */
@@ -176,6 +177,8 @@ int main(int argc, char **argv) {
     }
     printf("--------------------------------------------------\n");
     printf("Residual sum = %6.2lf\n", SUMres);
+    t1 = MPI_WTime();
+    printf("Tempo de execução: %f",t1-t0);	  
   }
 
   /* ----------------------------------------------------------	*/
